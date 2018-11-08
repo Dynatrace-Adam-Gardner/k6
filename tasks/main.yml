@@ -1,0 +1,27 @@
+---
+# tasks file for k6
+
+- name: Download k6 repo
+  get_url:
+    url: https://bintray.com/loadimpact/rpm/rpm
+    dest: /tmp/bintray-loadimpact-rpm.repo
+
+- name: Install repo in /etc/yum.repos.d
+  become: true  
+  command: cp /tmp/bintray-loadimpact-rpm.repo /etc/yum.repos.d
+  args:
+    creates: /etc/yum.repos.d/bintray-loadimpact-rpm.repo
+
+- name: Install k6
+  become: true
+  package:
+    name: k6
+    state: present
+
+- name: Get k6 version
+  command: k6 version
+  register: k6_version
+
+- name: Ensure k6 is installed
+  debug:
+    msg: "k6 version is: {{k6_version.stdout}}"
